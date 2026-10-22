@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NoteGo Privacy</title>
+<style>
+/* Layout: one reading column; language buttons on top switch the whole text. */
+:root {
+  --bg: #F5F7FA; --surface: #FFFFFF; --ink: #13203A; --muted: #556175; --line: #DDE3EB;
+  --accent: #1F56B3; --accent-soft: #E4ECFA;
+  --f-body: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0D131C; --surface: #151D29; --ink: #E5EBF4; --muted: #9AA7BA; --line: #253142;
+  --accent: #78A2F2; --accent-soft: #1B2A45; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0D131C; --surface: #151D29; --ink: #E5EBF4; --muted: #9AA7BA; --line: #253142;
+  --accent: #78A2F2; --accent-soft: #1B2A45; color-scheme: dark; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 64px; }
+.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.brand { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.01em; }
+.brand span { color: var(--accent); }
+.langs { display: flex; flex-wrap: wrap; gap: 8px; }
+.langs button { font: inherit; font-size: .9rem; font-weight: 600; min-height: 40px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.langs button[aria-pressed="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.langs button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1 { margin: 0; font-size: 2rem; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
+.date { margin: 4px 0 0; color: var(--muted); font-size: .95rem; }
+.summary { margin: 0; background: var(--accent-soft); border-radius: 14px; padding: 14px 18px; }
+section h2 { margin: 0 0 4px; font-size: 1.1rem; text-wrap: balance; }
+section p { margin: 0; max-width: 65ch; }
+article { display: flex; flex-direction: column; gap: 18px; }
+a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Note<span>Go</span></div>
+  <nav class="langs" id="langs" aria-label="Language"></nav>
+  <article id="doc" lang="en"></article>
+</div>
+<script>
+var OWNER = "Ivica Maric, Mühlstraße 28, 4600 Wels, Österreich";
+var EMAIL = '<a href="mailto:ivicamaric88@yahoo.com">ivicamaric88@yahoo.com</a>';
+var DATE = { hr: "22. listopada 2026.", de: "22. Oktober 2026", en: "22 October 2026", es: "22 de octubre de 2026", ru: "22 октября 2026 г.", pt: "22 de outubro de 2026" };
+var GOOGLE = '<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>';
+var DSB = '<a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a>';
+
+var T = {
+hr: { name: "Hrvatski", title: "Pravila privatnosti", valid: "Vrijedi od", summary: "NoteGo nema korisničke račune, reklame ni praćenje. Tvoje bilješke ostaju na tvom uređaju.", s: [
+["Tko je odgovoran", "Za obradu podataka odgovoran je " + OWNER + ". Kontakt: " + EMAIL + "."],
+["Podaci na tvom uređaju", "Bilješke, Moja mjesta i postavke spremaju se samo na tvom uređaju (i u tvojoj sigurnosnoj kopiji iCloud, ako je uključena). Mi nemamo pristup tim podacima."],
+["Kalendar", "Uz tvoje dopuštenje NoteGo upisuje termine (naslov, vrijeme, adresu i tekst bilješke) u kalendar koji izabereš. Ako je taj kalendar povezan s iCloudom, Googleom ili Outlookom, sinkronizaciju obavlja taj pružatelj prema svojim pravilima."],
+["Obavijesti", "Podsjetnici se zakazuju lokalno na tvom uređaju i ne šalju se preko našeg servera."],
+["Izračun vremena puta", "Kad pokreneš izračun puta, aplikacija šalje Googleovoj usluzi Routes API polazišnu i odredišnu adresu, način prijevoza i vrijeme termina. Ne šalju se tvoje ime, tekst bilješke ni oznaka uređaja. Google te podatke obrađuje prema svojim pravilima: " + GOOGLE + "."],
+["Navigacija i lokacija", "Dugme za navigaciju otvara Google Maps s adresom termina; dalje vrijede Googleova pravila. NoteGo sam ne pristupa lokaciji tvog uređaja."],
+["Pretplata", "Plaćanje pretplate NoteGo Premium obrađuje Apple. Ne dobivamo podatke o plaćanju; aplikacija samo na uređaju provjerava je li pretplata aktivna."],
+["Prijava problema", "Ako nam sam pošalješ e-mail preko „Prijavi problem”, dobivamo tvoju e-mail adresu, tvoj opis, verziju aplikacije i iOS-a, model uređaja i zadnju poruku o grešci. Koristimo ih samo za odgovor i popravak, a brišemo ih kad više nisu potrebni, najkasnije nakon 12 mjeseci."],
+["Pravna osnova i tvoja prava", "Podatke iz prijave problema obrađujemo radi pružanja usluge i našeg opravdanog interesa (čl. 6. st. 1. t. b i f GDPR-a). Imaš pravo na pristup, ispravak, brisanje, ograničenje obrade i prigovor. Za to nam piši na " + EMAIL + ". Pritužbu možeš podnijeti austrijskom tijelu za zaštitu podataka: " + DSB + "."],
+["Promjene", "Ako promijenimo ova pravila, novu verziju objavit ćemo na ovoj stranici s novim datumom."]
+]},
+de: { name: "Deutsch", title: "Datenschutzerklärung", valid: "Gültig ab", summary: "NoteGo hat keine Benutzerkonten, keine Werbung und kein Tracking. Deine Notizen bleiben auf deinem Gerät.", s: [
+["Verantwortlicher", "Verantwortlich für die Datenverarbeitung ist " + OWNER + ". Kontakt: " + EMAIL + "."],
+["Daten auf deinem Gerät", "Notizen, Meine Orte und Einstellungen werden nur auf deinem Gerät gespeichert (und in deinem iCloud-Backup, falls aktiviert). Wir haben keinen Zugriff darauf."],
+["Kalender", "Mit deiner Erlaubnis trägt NoteGo Termine (Titel, Uhrzeit, Adresse und Notiztext) in den von dir gewählten Kalender ein. Ist dieser Kalender mit iCloud, Google oder Outlook verbunden, erfolgt die Synchronisierung durch diesen Anbieter nach dessen Regeln."],
+["Benachrichtigungen", "Erinnerungen werden lokal auf deinem Gerät geplant und nicht über unseren Server versendet."],
+["Berechnung der Fahrzeit", "Wenn du die Fahrzeit berechnest, sendet die App Start- und Zieladresse, Verkehrsmittel und Terminzeit an den Google-Dienst Routes API. Dein Name, der Notiztext und Gerätekennungen werden nicht übertragen. Google verarbeitet diese Daten nach eigenen Regeln: " + GOOGLE + "."],
+["Navigation und Standort", "Die Navigationstaste öffnet Google Maps mit der Terminadresse; danach gelten die Regeln von Google. NoteGo selbst greift nicht auf den Standort deines Geräts zu."],
+["Abo", "Die Zahlung für NoteGo Premium wickelt Apple ab. Wir erhalten keine Zahlungsdaten; die App prüft nur auf dem Gerät, ob ein Abo aktiv ist."],
+["Problem melden", "Wenn du uns über „Problem melden“ selbst eine E-Mail schickst, erhalten wir deine E-Mail-Adresse, deine Beschreibung, die App- und iOS-Version, das Gerätemodell und die letzte Fehlermeldung. Wir nutzen sie nur für die Antwort und die Fehlerbehebung und löschen sie, sobald sie nicht mehr nötig sind, spätestens nach 12 Monaten."],
+["Rechtsgrundlage und deine Rechte", "Daten aus Problemmeldungen verarbeiten wir zur Erbringung des Dienstes und aufgrund unseres berechtigten Interesses (Art. 6 Abs. 1 lit. b und f DSGVO). Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Schreib dazu an " + EMAIL + ". Beschwerden kannst du bei der österreichischen Datenschutzbehörde einbringen: " + DSB + "."],
+["Änderungen", "Ändern wir diese Erklärung, veröffentlichen wir die neue Fassung mit neuem Datum auf dieser Seite."]
+]},
+en: { name: "English", title: "Privacy Policy", valid: "Effective", summary: "NoteGo has no user accounts, no ads and no tracking. Your notes stay on your device.", s: [
+["Who is responsible", "The controller responsible for data processing is " + OWNER + ". Contact: " + EMAIL + "."],
+["Data on your device", "Notes, My places and settings are stored only on your device (and in your iCloud backup, if enabled). We have no access to them."],
+["Calendar", "With your permission, NoteGo adds appointments (title, time, address and note text) to the calendar you choose. If that calendar syncs with iCloud, Google or Outlook, that provider handles the sync under its own policy."],
+["Notifications", "Reminders are scheduled locally on your device and are not sent through our servers."],
+["Travel time calculation", "When you calculate travel time, the app sends the start and destination addresses, the transport mode and the appointment time to Google's Routes API. Your name, note text and device identifiers are not sent. Google processes this data under its own policy: " + GOOGLE + "."],
+["Navigation and location", "The navigation button opens Google Maps with the appointment address; Google's policy applies from there. NoteGo itself does not access your device's location."],
+["Subscription", "Payment for NoteGo Premium is handled by Apple. We do not receive payment details; the app only checks on your device whether a subscription is active."],
+["Reporting a problem", "If you choose to email us via “Report a problem”, we receive your email address, your description, the app and iOS version, the device model and the last error message. We use them only to reply and fix the problem, and delete them when no longer needed, at the latest after 12 months."],
+["Legal basis and your rights", "We process problem-report data to provide the service and based on our legitimate interest (Art. 6(1)(b) and (f) GDPR). You have the right to access, rectification, erasure, restriction and objection. Write to " + EMAIL + ". You can lodge a complaint with the Austrian Data Protection Authority: " + DSB + "."],
+["Changes", "If we change this policy, we will publish the new version on this page with a new date."]
+]},
+es: { name: "Español", title: "Política de privacidad", valid: "Vigente desde", summary: "NoteGo no tiene cuentas de usuario, anuncios ni seguimiento. Tus notas se quedan en tu dispositivo.", s: [
+["Responsable", "El responsable del tratamiento de datos es " + OWNER + ". Contacto: " + EMAIL + "."],
+["Datos en tu dispositivo", "Las notas, Mis lugares y los ajustes se guardan solo en tu dispositivo (y en tu copia de seguridad de iCloud, si está activada). No tenemos acceso a ellos."],
+["Calendario", "Con tu permiso, NoteGo añade citas (título, hora, dirección y texto de la nota) al calendario que elijas. Si ese calendario se sincroniza con iCloud, Google u Outlook, la sincronización la realiza ese proveedor según sus propias normas."],
+["Notificaciones", "Los recordatorios se programan localmente en tu dispositivo y no pasan por nuestros servidores."],
+["Cálculo del tiempo de viaje", "Cuando calculas el tiempo de viaje, la app envía a la API Routes de Google la dirección de salida y de destino, el medio de transporte y la hora de la cita. No se envían tu nombre, el texto de la nota ni identificadores del dispositivo. Google trata estos datos según su propia política: " + GOOGLE + "."],
+["Navegación y ubicación", "El botón de navegación abre Google Maps con la dirección de la cita; a partir de ahí se aplica la política de Google. NoteGo no accede a la ubicación de tu dispositivo."],
+["Suscripción", "El pago de NoteGo Premium lo gestiona Apple. No recibimos datos de pago; la app solo comprueba en tu dispositivo si la suscripción está activa."],
+["Informar de un problema", "Si nos escribes por «Informar de un problema», recibimos tu correo electrónico, tu descripción, la versión de la app y de iOS, el modelo del dispositivo y el último mensaje de error. Los usamos solo para responder y corregir el problema, y los borramos cuando ya no son necesarios, como máximo a los 12 meses."],
+["Base jurídica y tus derechos", "Tratamos los datos de los informes de problemas para prestar el servicio y por nuestro interés legítimo (art. 6.1 b y f del RGPD). Tienes derecho de acceso, rectificación, supresión, limitación y oposición. Escríbenos a " + EMAIL + ". Puedes presentar una reclamación ante la autoridad austriaca de protección de datos: " + DSB + "."],
+["Cambios", "Si cambiamos esta política, publicaremos la nueva versión en esta página con una nueva fecha."]
+]},
+ru: { name: "Русский", title: "Политика конфиденциальности", valid: "Действует с", summary: "В NoteGo нет учётных записей, рекламы и отслеживания. Ваши заметки остаются на вашем устройстве.", s: [
+["Ответственное лицо", "За обработку данных отвечает " + OWNER + ". Контакт: " + EMAIL + "."],
+["Данные на вашем устройстве", "Заметки, «Мои места» и настройки хранятся только на вашем устройстве (и в вашей резервной копии iCloud, если она включена). У нас нет к ним доступа."],
+["Календарь", "С вашего разрешения NoteGo добавляет встречи (название, время, адрес и текст заметки) в выбранный вами календарь. Если этот календарь синхронизируется с iCloud, Google или Outlook, синхронизацию выполняет этот сервис по своим правилам."],
+["Уведомления", "Напоминания планируются локально на вашем устройстве и не проходят через наши серверы."],
+["Расчёт времени в пути", "Когда вы рассчитываете время в пути, приложение отправляет в сервис Google Routes API адрес отправления и назначения, вид транспорта и время встречи. Ваше имя, текст заметки и идентификаторы устройства не передаются. Google обрабатывает эти данные по своим правилам: " + GOOGLE + "."],
+["Навигация и местоположение", "Кнопка навигации открывает Google Maps с адресом встречи; дальше действуют правила Google. Само приложение NoteGo не получает доступ к местоположению устройства."],
+["Подписка", "Оплату NoteGo Premium обрабатывает Apple. Мы не получаем платёжные данные; приложение лишь проверяет на устройстве, активна ли подписка."],
+["Сообщение о проблеме", "Если вы сами напишете нам через «Сообщить о проблеме», мы получим ваш адрес электронной почты, описание, версию приложения и iOS, модель устройства и последнее сообщение об ошибке. Мы используем их только для ответа и исправления и удаляем, когда они больше не нужны, не позднее чем через 12 месяцев."],
+["Правовое основание и ваши права", "Данные из сообщений о проблемах мы обрабатываем для предоставления услуги и на основании законного интереса (ст. 6(1)(b) и (f) GDPR). Вы имеете право на доступ, исправление, удаление, ограничение обработки и возражение. Пишите на " + EMAIL + ". Жалобу можно подать в австрийский орган по защите данных: " + DSB + "."],
+["Изменения", "Если мы изменим эту политику, новая версия будет опубликована на этой странице с новой датой."]
+]},
+pt: { name: "Português", title: "Política de Privacidade", valid: "Em vigor desde", summary: "O NoteGo não tem contas de usuário, anúncios nem rastreamento. Suas notas ficam no seu dispositivo.", s: [
+["Responsável", "O responsável pelo tratamento dos dados é " + OWNER + ". Contato: " + EMAIL + "."],
+["Dados no seu dispositivo", "Notas, Meus lugares e ajustes ficam salvos apenas no seu dispositivo (e no seu backup do iCloud, se ativado). Não temos acesso a eles."],
+["Calendário", "Com a sua permissão, o NoteGo adiciona compromissos (título, horário, endereço e texto da nota) ao calendário que você escolher. Se esse calendário sincroniza com iCloud, Google ou Outlook, a sincronização é feita por esse provedor conforme as regras dele."],
+["Notificações", "Os lembretes são agendados localmente no seu dispositivo e não passam pelos nossos servidores."],
+["Cálculo do tempo de viagem", "Quando você calcula o tempo de viagem, o app envia à Routes API do Google o endereço de partida e de destino, o meio de transporte e o horário do compromisso. Seu nome, o texto da nota e identificadores do dispositivo não são enviados. O Google trata esses dados conforme a própria política: " + GOOGLE + "."],
+["Navegação e localização", "O botão de navegação abre o Google Maps com o endereço do compromisso; a partir daí vale a política do Google. O NoteGo não acessa a localização do seu dispositivo."],
+["Assinatura", "O pagamento do NoteGo Premium é processado pela Apple. Não recebemos dados de pagamento; o app só verifica no dispositivo se a assinatura está ativa."],
+["Relatar um problema", "Se você nos enviar um e-mail por “Relatar um problema”, recebemos seu endereço de e-mail, sua descrição, a versão do app e do iOS, o modelo do dispositivo e a última mensagem de erro. Usamos esses dados só para responder e corrigir o problema, e os apagamos quando não forem mais necessários, no máximo após 12 meses."],
+["Base legal e seus direitos", "Tratamos os dados dos relatos de problemas para prestar o serviço e com base no nosso interesse legítimo (art. 6.º, n.º 1, alíneas b e f do RGPD). Você tem direito de acesso, retificação, exclusão, limitação e oposição. Escreva para " + EMAIL + ". Você pode apresentar reclamação à autoridade austríaca de proteção de dados: " + DSB + "."],
+["Alterações", "Se alterarmos esta política, publicaremos a nova versão nesta página com uma nova data."]
+]}
+};
+
+var order = ["hr", "de", "en", "es", "ru", "pt"];
+var langs = document.getElementById("langs");
+var doc = document.getElementById("doc");
+
+function pick() {
+  var h = (location.hash || "").replace("#", "");
+  if (T[h]) return h;
+  var n = (navigator.language || "en").slice(0, 2);
+  if (n === "bs" || n === "sr") n = "hr";
+  return T[n] ? n : "en";
+}
+
+function render(code) {
+  var t = T[code];
+  doc.lang = code;
+  doc.innerHTML = "";
+  var head = document.createElement("header");
+  head.innerHTML = "<h1>" + t.title + " · NoteGo</h1><p class='date'>" + t.valid + ": " + DATE[code] + "</p>";
+  doc.appendChild(head);
+  var sum = document.createElement("p");
+  sum.className = "summary";
+  sum.textContent = t.summary;
+  doc.appendChild(sum);
+  t.s.forEach(function (sec) {
+    var el = document.createElement("section");
+    el.innerHTML = "<h2></h2><p>" + sec[1] + "</p>";
+    el.querySelector("h2").textContent = sec[0];
+    doc.appendChild(el);
+  });
+  Array.prototype.forEach.call(langs.children, function (b) {
+    b.setAttribute("aria-pressed", b.dataset.code === code ? "true" : "false");
+  });
+  document.title = t.title + " – NoteGo";
+}
+
+order.forEach(function (code) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.dataset.code = code;
+  b.textContent = T[code].name;
+  b.addEventListener("click", function () { render(code); });
+  langs.appendChild(b);
+});
+
+render(pick());
+</script>
+
+</body>
+</html>
