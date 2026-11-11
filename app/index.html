@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NoteGo – Notizen, Termine, Losfahren</title>
+<meta name="description" content="NoteGo: Notizen und Listen, Termine im Kalender, Erinnerungen und der Hinweis, wann du losfahren musst.">
+<style>
+:root { --bg:#F4F6FB; --card:#FFFFFF; --ink:#141A26; --muted:#5B6475; --accent:#1F56B3; --orange:#F2A81D; --line:#DDE3EE; }
+@media (prefers-color-scheme: dark) { :root { --bg:#0F131B; --card:#1A202B; --ink:#EEF1F7; --muted:#A3ACBD; --accent:#6C9BEA; --line:#2A3241; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height:1.5; }
+main { max-width:520px; margin:0 auto; padding:40px 16px 48px; text-align:center; }
+.icon { width:112px; height:112px; border-radius:26px; box-shadow:0 8px 24px rgba(31,86,179,.25); }
+h1 { font-size:2rem; margin:18px 0 6px; }
+.sub { color:var(--muted); font-size:1.05rem; margin:0 0 26px; }
+.btns { display:flex; flex-direction:column; gap:12px; }
+.btn { display:flex; align-items:center; justify-content:center; gap:10px; min-height:56px; border-radius:14px; font-weight:700; font-size:1.05rem; text-decoration:none; border:2px solid var(--accent); }
+.btn.primary { background:var(--accent); color:#fff; }
+.btn.secondary { color:var(--accent); background:transparent; }
+.btn.soon { border-color:var(--line); color:var(--muted); pointer-events:none; }
+.btn small { font-weight:500; }
+ul { list-style:none; padding:0; margin:30px 0 0; text-align:left; background:var(--card); border-radius:16px; border:1px solid var(--line); }
+li { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; gap:12px; }
+li:last-child { border-bottom:0; }
+li span:first-child { font-size:1.3rem; }
+footer { margin-top:28px; font-size:.85rem; color:var(--muted); }
+footer a { color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <svg class="icon" viewBox="0 0 1024 1024" role="img" aria-label="NoteGo">
+    <rect width="1024" height="1024" fill="#1F56B3"/>
+    <g transform="rotate(-6 470 480)">
+      <rect x="220" y="200" width="500" height="580" rx="70" fill="#FFFFFF"/>
+      <rect x="305" y="335" width="330" height="40" rx="20" fill="#C6D5F0"/>
+      <rect x="305" y="430" width="250" height="40" rx="20" fill="#C6D5F0"/>
+      <rect x="305" y="525" width="290" height="40" rx="20" fill="#C6D5F0"/>
+    </g>
+    <circle cx="705" cy="715" r="200" fill="#F2A81D" stroke="#1F56B3" stroke-width="32"/>
+    <path d="M800 615 L712 812 L690 735 L612 712 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="22" stroke-linejoin="round"/>
+  </svg>
+  <h1>NoteGo</h1>
+  <p class="sub" data-t="sub"></p>
+
+  <div class="btns">
+    <a id="ios" class="btn" href="#"> <span data-t="ios"></span></a>
+    <a id="android" class="btn" href="#"> <span data-t="android"></span></a>
+  </div>
+
+  <ul>
+    <li><span>📝</span><span data-t="f1"></span></li>
+    <li><span>📅</span><span data-t="f2"></span></li>
+    <li><span>🚗</span><span data-t="f3"></span></li>
+    <li><span>✉️</span><span data-t="f4"></span></li>
+  </ul>
+
+  <footer><a href="../" data-t="privacy"></a></footer>
+</main>
+<script>
+// ▼ Nakon objave upiši brojeve/linkove ovdje
+var APP_STORE_URL = "https://apps.apple.com/app/id6826003328";      // NoteGo u App Storeu
+var PLAY_URL = "https://play.google.com/store/apps/details?id=com.ivicamaric.notego";
+var PLAY_LIVE = false;   // true kad NoteGo izađe na Google Play
+
+var T = {
+  hr: { sub:"Bilješke, liste i termini – NoteGo te podsjeti i kaže kada trebaš krenuti.", ios:"Preuzmi za iPhone", android:"Preuzmi za Android", soon:"Android – uskoro", f1:"Bilješke i liste za kupovinu s kvačicama", f2:"Termini sami idu u kalendar, s podsjetnicima", f3:"„Krenite u …” – vrijeme puta s prometom", f4:"Pošalji listu ili termin prijatelju", privacy:"Pravila privatnosti" },
+  de: { sub:"Notizen, Listen und Termine – NoteGo erinnert dich und sagt, wann du losfahren musst.", ios:"Für iPhone laden", android:"Für Android laden", soon:"Android – bald verfügbar", f1:"Notizen und Einkaufslisten zum Abhaken", f2:"Termine automatisch im Kalender, mit Erinnerungen", f3:"„Jetzt losfahren“ – Fahrzeit mit Verkehr", f4:"Liste oder Termin an Freunde senden", privacy:"Datenschutz" },
+  en: { sub:"Notes, lists and appointments – NoteGo reminds you and tells you when to leave.", ios:"Get it for iPhone", android:"Get it for Android", soon:"Android – coming soon", f1:"Notes and shopping lists with checkboxes", f2:"Appointments go to your calendar, with reminders", f3:"“Leave now” – travel time with traffic", f4:"Send a list or appointment to friends", privacy:"Privacy" },
+  es: { sub:"Notas, listas y citas: NoteGo te avisa y te dice cuándo salir.", ios:"Descargar para iPhone", android:"Descargar para Android", soon:"Android – muy pronto", f1:"Notas y listas de compras con casillas", f2:"Las citas van al calendario, con recordatorios", f3:"«Sal ahora»: tiempo de viaje con tráfico", f4:"Envía una lista o cita a tus amigos", privacy:"Privacidad" },
+  ru: { sub:"Заметки, списки и встречи — NoteGo напомнит и подскажет, когда выезжать.", ios:"Скачать для iPhone", android:"Скачать для Android", soon:"Android — скоро", f1:"Заметки и списки покупок с галочками", f2:"Встречи сами попадают в календарь, с напоминаниями", f3:"«Пора выезжать» — время в пути с учётом пробок", f4:"Отправьте список или встречу друзьям", privacy:"Конфиденциальность" },
+  pt: { sub:"Notas, listas e compromissos – o NoteGo lembra você e diz quando sair.", ios:"Baixar para iPhone", android:"Baixar para Android", soon:"Android – em breve", f1:"Notas e listas de compras com caixas de seleção", f2:"Compromissos vão para o calendário, com lembretes", f3:"«Saia agora» – tempo de viagem com trânsito", f4:"Envie uma lista ou compromisso a amigos", privacy:"Privacidade" }
+};
+var lang = (navigator.language || "en").slice(0, 2).toLowerCase();
+if (["bs", "sr", "sh"].indexOf(lang) >= 0) lang = "hr";
+var t = T[lang] || T.en;
+document.documentElement.lang = lang in T ? lang : "en";
+document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t[el.dataset.t]; });
+
+var ua = navigator.userAgent;
+var isAndroid = /Android/i.test(ua);
+var ios = document.getElementById("ios"), android = document.getElementById("android");
+ios.href = APP_STORE_URL;
+if (PLAY_LIVE) { android.href = PLAY_URL; } else { android.querySelector("span").textContent = t.soon; android.classList.add("soon"); android.removeAttribute("href"); }
+// Gumb za vlastiti telefon je istaknut i prvi
+if (isAndroid && PLAY_LIVE) { android.classList.add("primary"); ios.classList.add("secondary"); ios.parentNode.appendChild(ios); }
+else { ios.classList.add("primary"); if (PLAY_LIVE) android.classList.add("secondary"); }
+</script>
+</body>
+</html>
